@@ -1,0 +1,82 @@
+<div class="card">
+  <div class="card-header">
+    <!-- Binding title with the class variable -->
+    {{ pageTtitle }}
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-2">Filter by:</div>
+      <div class="col-md-4">
+        <!-- 
+          We use two-way binding with the ngModule Directive
+
+          [] -> property binding
+          () -> event binding to send notification of the user-entered text
+         -->
+        <input type="text" [(ngModel)]="listFilter" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <h4>Filtered by: {{ listFilter }}</h4>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <!-- Using a Built-in directive (structural one) evaluating to true a value -->
+      <table class="table" *ngIf="products.length">
+        <thead>
+          <tr>
+            <th>
+              <!-- Bingin event to the button -->
+              <button 
+                class="btn btn-primary"
+                (click)="toggleImage()"
+              >{{ showImage ? "Hide" : "Show" }} Images</button>
+            </th>
+            <th>Product</th>
+            <th>Code</th>
+            <th>Available</th>
+            <th>Price</th>
+            <th>5 Star Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of filteredProducts">
+            <td>
+              <!-- using Property Binding to associate data to img tags -->
+              <img
+              *ngIf="showImage" 
+              [src]="product.imageUrl" 
+              [title]="product.productName" 
+              [style.width.px]="imageWidth"
+              [style.margin.px]="imageMargin"
+              />
+            </td>
+            <td><a [routerLink]="['/products', product.productId]">{{ product.productName }}</a></td>
+            <td>{{ product.productCode | lowercase | convertToSpaces:'-'}}</td>
+            <td>{{ product.releaseDate }}</td>
+            <!-- 
+              Using pipes with parameters 
+              USD -> The desired currency code
+              symbol -> string defining how to show the currency symbol
+              1.2-2 -> digit info 
+              1-> minium number of integer digits
+              .2-> minimum number of fractional digits
+              2-> maximum number of digits at the decimal
+            -->
+            <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td>
+              <!-- Nested component as a directive -->
+              <!-- Passing Data to a nested component (@Input()) -->
+              <!-- Recieveing data from child component (@Output) -->
+              <pm-star 
+                [rating]="product.starRating"
+                (ratingClicked)="onRatingClicked($event)"
+                ></pm-star>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
